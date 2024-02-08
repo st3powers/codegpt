@@ -34,10 +34,9 @@ build_sdm <- function(pres, env, buffer_distance_m = 1e6, max_cor = 0.7,
   best_model <- enm$results$models[[which.max(enm$results$test.AUC)]]      
   
   # Step 7: Project model onto map
-  env_moll_ext <- extent(env_moll)   
+  env_moll_ext <- extent(env_moll)
   grid <- raster::raster(ext = env_moll_ext, resolution = res(env_moll), crs = crs(env_moll))   
   pred <- predict(best_model$final.model, grid, na.rm = TRUE)      
-  
   
   # Step 8: Save model to output_path
   writeRaster(pred, output_path, format = "GTiff", overwrite = TRUE)      

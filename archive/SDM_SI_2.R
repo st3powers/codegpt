@@ -9,11 +9,6 @@ library(terra)
 #library(ecospat)
 
 pres <- read.csv(file.path(system.file(package="dismo"), "/ex/bradypus.csv"))[,2:3]
-pres <- read_csv("Carnegiea-gigantea-GBIF.txt")
-pres <- pres %>% rename(lat=latitude,lon=longitude)
-which(is.na(pres))
-pres <- na.omit(pres)
-pres<-pres[,-1]
 
 env <- raster::stack(list.files(path=paste(system.file(package="dismo"), "/ex", sep=""), 
                                  pattern="grd", full.names=TRUE))
