@@ -1,0 +1,62 @@
+Certainly! To create a Shiny app that uses the `spocc` R package to download data for a user-specified species and plots it on a map, you can use the following code. I'll assume you have the necessary packages installed (`shiny`, `leaflet`, and `spocc`).
+
+```R
+# Install required packages if not installed
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny")
+}
+if (!requireNamespace("leaflet", quietly = TRUE)) {
+  install.packages("leaflet")
+}
+if (!requireNamespace("spocc", quietly = TRUE)) {
+  install.packages("spocc")
+}
+
+# Load required packages
+library(shiny)
+library(leaflet)
+library(spocc)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("species_input", "Enter species name:", value = "Erica plena"),
+      actionButton("download_button", "Download Data"),
+      width = 3
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  # Reactive function to download data
+  downloaded_data <- eventReactive(input$download_button, {
+    # Download data for the specified species
+    occurrence_data <- occ(query = input$species_input, from = "gbif", has_coords = TRUE)
+    
+    # Remove records with NA values for coordinates
+    occurrence_data <- occurrence_data[complete.cases(occurrence_data[, c("decimalLatitude", "decimalLongitude")]), ]
+    
+    return(occurrence_data)
+  })
+
+  # Update map
+  output$map <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%
+      addMarkers(data = downloaded_data(), 
+                 ~decimalLongitude, ~decimalLatitude,
+                 popup = ~paste("Species: ", species, "<br>Date: ", eventDate))
+  })
+}
+
+# Run the application
+shinyApp(ui, server)
+```
+
+This code creates a simple Shiny app with a text input for species name, a button to trigger data download, and a leaflet map to display the occurrence records. The `spocc` package is used to download species occurrence data from GBIF, and the map is updated accordingly. The default species is set to "Erica plena," and NA values for coordinates are removed.

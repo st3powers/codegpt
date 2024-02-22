@@ -1,0 +1,45 @@
+# Install and load required packages
+if (!requireNamespace("shiny", quietly = TRUE)) install.packages("shiny")
+if (!requireNamespace("spocc", quietly = TRUE)) install.packages("spocc")
+if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
+
+library(shiny)
+library(spocc)
+library(leaflet)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("species_input", "Enter Species:", value = "Erica plena"),
+      actionButton("update_button", "Update Map")
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  # Reactive function to download data based on user input
+  download_data <- reactive({
+    species_name <- input$species_input
+    occurrences <- occ(query = species_name, from = "gbif", limit = 100)
+    occurrences <- occurrences[complete.cases(occurrences$longitude, occurrences$latitude), ]
+    occurrences
+  })
+  
+  # Update map based on user input
+  observeEvent(input$update_button, {
+    output$map <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        addMarkers(data = download_data(), lat = ~latitude, lng = ~longitude, popup = ~name)
+    })
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)

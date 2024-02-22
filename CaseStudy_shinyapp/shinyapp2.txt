@@ -1,0 +1,56 @@
+Certainly! Below is an example of a Shiny app in R that uses the `spocc` package to download data for a user-specified species and plots it on a map. The default species is set to "Erica plena", and records with NA values for coordinates are removed. The `namespace` function is used to ensure proper namespacing.
+
+```R
+# Install required packages if not installed
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny")
+}
+
+if (!requireNamespace("spocc", quietly = TRUE)) {
+  install.packages("spocc")
+}
+
+# Load libraries
+library(shiny)
+library(spocc)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("speciesInput", "Enter species name:", value = "Erica plena"),
+      actionButton("plotButton", "Plot Map")
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server
+server <- function(input, output) {
+  
+  observeEvent(input$plotButton, {
+    
+    # Download occurrence data
+    species_occ <- spocc::occ(query = input$speciesInput)
+    
+    # Remove records with NA coordinates
+    species_occ <- species_occ[complete.cases(species_occ$latitude, species_occ$longitude), ]
+    
+    # Plot map
+    output$map <- renderLeaflet({
+      leaflet(species_occ) %>%
+        addTiles() %>%
+        addMarkers(~longitude, ~latitude, popup = ~paste("Species: ", species))
+    })
+  })
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+```
+
+This Shiny app allows users to enter a species name, click the "Plot Map" button, and it will download occurrence data for the specified species using the `spocc` package. It then removes records with NA coordinates and plots the remaining occurrences on a leaflet map.

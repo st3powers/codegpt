@@ -1,0 +1,70 @@
+Certainly! Below is an example of a Shiny app written in R that uses the `spocc` package to download species occurrence data for a user-specified species and plots it on a map. The default species is set to "Erica plena," and records with NA values for coordinates are removed.
+
+```R
+# Install required packages if not installed
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny")
+}
+if (!requireNamespace("spocc", quietly = TRUE)) {
+  install.packages("spocc")
+}
+
+# Load libraries
+library(shiny)
+library(spocc)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("species_input", "Enter species:", value = "Erica plena"),
+      actionButton("submit_btn", "Submit")
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server
+server <- function(input, output) {
+  
+  observeEvent(input$submit_btn, {
+    
+    # Download occurrence data using spocc
+    species_data <- suppressMessages({
+      get_species(input$species_input)
+    })
+    
+    # Remove records with NA values for coordinates
+    species_data <- species_data[complete.cases(species_data$coordinates), ]
+    
+    # Plot map
+    output$map <- renderLeaflet({
+      leaflet(species_data) %>%
+        addTiles() %>%
+        addMarkers(
+          lng = ~coordinates[1],
+          lat = ~coordinates[2],
+          popup = ~name
+        )
+    })
+  })
+}
+
+# Run the application
+shinyApp(ui, server)
+```
+
+Make sure to install the required packages by running `install.packages("shiny")` and `install.packages("spocc")` if you haven't already.
+
+To run the app, save the code above in a file (e.g., "species_map_app.R") and execute the following in your R console:
+
+```R
+library(shiny)
+source("species_map_app.R")
+runApp()
+```
+
+This app allows users to input a species name, click the "Submit" button, and view a map with markers representing occurrences of the specified species. The app removes records with NA values for coordinates to ensure accurate plotting on the map.

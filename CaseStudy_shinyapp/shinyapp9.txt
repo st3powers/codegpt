@@ -1,0 +1,62 @@
+Certainly! Below is an example code for a Shiny app that uses the `spocc` R package to download data for a user-specified species and plots it on a map. The default species is set to Erica plena, and records with NA values for coordinates are removed.
+
+```R
+# Install required packages if not already installed
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny")
+}
+
+if (!requireNamespace("spocc", quietly = TRUE)) {
+  install.packages("spocc")
+}
+
+if (!requireNamespace("leaflet", quietly = TRUE)) {
+  install.packages("leaflet")
+}
+
+# Load libraries
+library(shiny)
+library(spocc)
+library(leaflet)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+
+  sidebarLayout(
+    sidebarPanel(
+      textInput("speciesInput", "Enter species:", value = "Erica plena"),
+      actionButton("plotButton", "Plot Map")
+    ),
+    mainPanel(
+      leafletOutput("occurrenceMap")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  
+  observeEvent(input$plotButton, {
+    species <- input$speciesInput
+    
+    # Download occurrence data using spocc package
+    occurrences <- spocc::occ(species, from = "gbif", gbifopts = list(hasCoordinate = TRUE))
+    
+    # Remove records with NA values for coordinates
+    occurrences <- occurrences[complete.cases(occurrences$latitude, occurrences$longitude), ]
+    
+    # Create leaflet map
+    output$occurrenceMap <- renderLeaflet({
+      leaflet() %>%
+        addTiles() %>%
+        addMarkers(data = occurrences, ~longitude, ~latitude, popup = ~name)
+    })
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+```
+
+Make sure to install the required packages (`shiny`, `spocc`, `leaflet`) before running the code. You can install them using `install.packages("package_name")`. The app consists of a text input for the species name, a button to trigger the map plot, and the leaflet map itself. The `spocc::occ` function is used to download occurrence data for the specified species, and leaflet is used to create an interactive map.

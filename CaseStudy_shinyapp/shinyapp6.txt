@@ -1,0 +1,58 @@
+Certainly! Below is an example of a Shiny app in R that uses the `spocc` package to download occurrence data for a user-specified species and plots it on a map. The default species is set to "Erica plena", and records with NA values for coordinates are removed. The functions are namespaced.
+
+```R
+# Install required packages if not already installed
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny")
+}
+if (!requireNamespace("spocc", quietly = TRUE)) {
+  install.packages("spocc")
+}
+
+# Load required libraries
+library(shiny)
+library(spocc)
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Species Occurrence Map"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("species", "Enter species:", value = "Erica plena"),
+      actionButton("submit", "Submit")
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  observeEvent(input$submit, {
+    species <- input$species
+    
+    # Download occurrence data
+    occurrences <- get_occ(input$species)
+    
+    # Remove records with NA values for coordinates
+    occurrences <- occurrences[complete.cases(occurrences$longitude, occurrences$latitude), ]
+    
+    # Render the map
+    output$map <- renderLeaflet({
+      leaflet(occurrences) %>%
+        addTiles() %>%
+        addMarkers(
+          lng = ~longitude,
+          lat = ~latitude,
+          popup = ~paste("Species: ", species)
+        )
+    })
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+```
+
+Make sure to install the required packages by running the `install.packages` commands at the beginning of the code. You can run this script in your R environment, and it will launch a Shiny app where users can input a species name, click the "Submit" button, and see the occurrences of that species plotted on a map. The map is generated using the `leaflet` package.

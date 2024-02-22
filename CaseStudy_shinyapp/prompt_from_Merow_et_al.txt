@@ -1,0 +1,1 @@
+write R code for a shiny app that downloads data using the spocc R package for a user specifies species and plots it on a map. set the default species to be Erica plena. namespace all functions used. Be sure to remove records with NA values for coordinates. set the chatgpt temperature parameter to 0. 
