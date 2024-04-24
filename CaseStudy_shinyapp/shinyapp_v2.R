@@ -38,7 +38,7 @@ ui <- fluidPage(
 #      p("This app retrieves data from GBIF- Global Biodiversity Information Facility"),#, https://www.gbif.org/"),
 #      tags$a(href= "https://www.gbif.org/", "https://www.gbif.org/"),
       
-      p(span("This app retrieves data from GBIF- Global Biodiversity Information Facility ",style="font-weight:bold"),url_GBIF_format),
+      p(span("This app retrieves species location data from GBIF- Global Biodiversity Information Facility ",style="font-weight:bold"),url_GBIF_format),
       p(span('See Owens H, Barve V, Chamberlain S (2024). spocc: Interface to Species Occurrence Data Sources. R package version 1.2.3', url_spocc_format)),
       p(),
       fluidRow(
@@ -124,15 +124,8 @@ server <- function(input, output) {
       setView(lng = 0, lat = 0, zoom = 2)
     
     data <- species_data()
+
     
-    if(length(data[,1])<=1000){
-    reactive_message_largetable("")
-    }
-    
-    if(length(data[,1])>1000){
-      reactive_message_largetable("Large table- Only a subset of site locations are mapped above. The complete set of records is shown in the table below.")
-      data<-data[1:1000,]
-    }
     
     # The below code had a few problems
     # The if statement is error prone. Data can be a data frame with 0 columns and 0 rows, which returns FALSE when is.null(data) is called. 
@@ -145,6 +138,16 @@ server <- function(input, output) {
     
     # if (!is.null(data)) { 
     if(length(data)>0) { # revised code
+      
+      if(nrow(data)<=1000){
+        reactive_message_largetable("")
+      }
+      
+      if(nrow(data)>1000){
+        reactive_message_largetable("Large table- Only a subset of site locations are mapped above. The complete set of records is shown in the table below.")
+        data<-data[1:1000,]
+      }
+      
       labs<-lapply(seq(nrow(data)), function(i) {
         paste0( data[i, "name"], '<br>', 
                 data[i, "verbatimLocality"], '<br>', 
