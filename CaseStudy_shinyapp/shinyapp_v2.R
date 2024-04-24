@@ -125,13 +125,13 @@ server <- function(input, output) {
     
     data <- species_data()
     
-    if(length(data[,1])<=2000){
+    if(length(data[,1])<=1000){
     reactive_message_largetable("")
     }
     
-    if(length(data[,1])>2000){
+    if(length(data[,1])>1000){
       reactive_message_largetable("Large table- Only a subset of site locations are mapped above. The complete set of records is shown in the table below.")
-      data<-data[1:2000,]
+      data<-data[1:1000,]
     }
     
     # The below code had a few problems
