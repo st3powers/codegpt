@@ -112,7 +112,7 @@ server <- function(input, output) {
 #      map <- addMarkers(map, data = data, lat = ~lat, lng = ~lon,
       map <- addMarkers(map, data = data, lat = ~latitude, lng = ~longitude,# # revised code
 #                        popup = ~paste("Species: ", species_data()$name))  # sure, but we can just call data, which is identical to species_data()
-                        label = ~paste("Species: ", data$name)) # revised code
+                        label = ~paste(paste(data$name,", ",data$verbatimLocality,", identified by ", data$identifiedBy,sep=""))) # revised code
     }
     
     map
