@@ -12,6 +12,7 @@ library(leaflet)
 library(DT)
 library(shinydashboard)
 library(shinyjs)
+library(dplyr)
 
 myModalData <- function() {
   div(id = "download_all_data",
@@ -60,16 +61,20 @@ server <- function(input, output) {
   
   observeEvent(input$download_button, {
     # Download data when button is clicked
-    species <- input$species_input
-    
+#    species <- input$species_input
+    print(input$species_input)
+    species <-  unlist(strsplit(input$species_input,","))
+#    species <- paste(input$species_input,collapse=",")
+    print(species)
     # Revised below line, which threw an error
 #    occurrences <- spocc::occ(species = species) 
 #    occurrences <- spocc::occ(query = species,from ='gbif')#,limit=5) # new code
     occurrences <- spocc::occ(query = species,from ='gbif')#,limit=5) # new code
-    
+#    occurrences <- bind_rows(occurrences$data)
 #    spocc::occ(query = 'Haliaeetus leucocephalus',limit=5) 
+#    spocc::occ(query = c('Haliaeetus leucocephalus','Oncorhynchus mykiss'))
     
-    occurrences<-occurrences$gbif$data %>% as.data.frame()
+    occurrences<- bind_rows(occurrences$gbif$data) %>% as.data.frame()
     
     # Added the below lines, to remove species name from column names. spocc::occ() puts the species name as prefix in column names.
     speciesprefix<-paste(input$species_input,".",sep="") # new code
