@@ -43,8 +43,8 @@ ui <- fluidPage(
       p(),
       fluidRow(
         column(width = 8,
-      textInput("species_input", "Type species scientific name:", value = "Alligator mississippiensis"),
-      numericInput("recordlimit", "Set record limit", value = 500)
+      textInput("species_input", "Type species scientific name (genus and species)", value = "Alligator mississippiensis"),
+      numericInput("recordlimit", "Set record limit (be patient if you increase this)", value = 500)
                )),
 #      actionButton("download_button", "Get data")#,
       loadingButton("download_button", "Get data")#,
