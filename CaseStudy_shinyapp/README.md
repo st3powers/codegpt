@@ -9,7 +9,7 @@ References
 2. Merow C, Serra-Diaz, JM, Enquist, BJ, & Wilson AM. 2023. AI chatbots can boost scientific coding. Nature Ecology & Evolution. https://doi.org/10.1038/s41559-023-02063-3
 3. Owens H, Chamberlain S, Ram K, Hart T, rOpenSci. 2023. spocc: Interface to Species Occurrence Data Sources.https://cran.r-project.org/web/packages/spocc/index.html
 4. Milanesi P, Mori E, Menchetti M. 2020. Observer-oriented approach improves species distribution models from citizen science data. Ecology and Evolution. https://doi.org/10.1002/ece3.6832
-5. Perkel, JM. 2023. Six tips for better coding with ChatGPT. Nature. https://doi.org/10.1038/d41586-023-01833-0
+5. Perkel JM. 2023. Six tips for better coding with ChatGPT. Nature. https://doi.org/10.1038/d41586-023-01833-0
 6. R Core Team. 2024. R: A Language and Environment for Statistical Computing. from https://www.r-project.org/
 7. Sala OS, Chapin FS, Armesto JJ, and others. Global biodiversity scenarios for the year 2100. Science. https://doi.org/10.1126/science.287.5459.1770
 8. Webb KK, Conway WC, Calkins GE, Duguay. 2010. Habitat use of American alligators in East Texas. The Journal of Wildlife Management. https://doi.org/10.2193/2006-294
