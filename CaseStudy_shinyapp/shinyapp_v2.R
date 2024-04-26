@@ -1,10 +1,7 @@
 # Install required packages if not already installed
-#if (!requireNamespace("shiny", quietly = TRUE)) install.packages("shiny")
-#if (!requireNamespace("spocc", quietly = TRUE)) install.packages("spocc")
-#if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
-#if (!requireNamespace("ldata.table", quietly = TRUE)) install.packages("data.table")
 
 # Load required libraries
+library(tidyverse)
 library(shiny)
 library(spocc)
 library(leaflet)
@@ -15,7 +12,6 @@ library(shinyjs)
 library(dplyr)
 library(htmltools)
 library(shinyFeedback)
-#library(shinyWidgets)
 
 myModalData <- function() {
   div(id = "download_all_data",
@@ -55,19 +51,16 @@ ui <- fluidPage(
       
       textOutput(outputId="message_largetable"),
       fluidRow(
-        column(width = 12,
-               box(width = NULL,
-                   collapsible = TRUE,
+ #       column(width = 12,
+               box(width = 12,title="Data",
+#                   collapsible = TRUE,
 #                   title = "Data",
-                   dataTableOutput("tabledata")
+                  downloadButton('download1', 'Download csv'),
+                  dataTableOutput("tabledata")
                ) # close box
         ) # close column
       )
-      
     )
-    
-      
-  )
 )
 
 # Define server
@@ -83,9 +76,6 @@ server <- function(input, output) {
 #    species <- input$species_input
     print(input$species_input)
     species <-  unlist(strsplit(input$species_input,","))
-#    species[grep("* ",species)]<-substr(species[grep("* ",species)],1,
-#                                        nchar(species[grep("* ",species)]))
-#    species <- paste(input$species_input,collapse=",")
     print(species)
     # Revised below line, which threw an error
 #    occurrences <- spocc::occ(species = species) 
@@ -166,37 +156,24 @@ server <- function(input, output) {
     
   })
   
- 
-  
   output$message_largetable<- renderText({
     reactive_message_largetable()
   })
   
-  output$tabledata <- renderDataTable(#{
+  output$tabledata <- renderDataTable(server=TRUE,#{
     datatable(species_data(), 
-              extensions = 'Buttons', selection = 'none',
+              rownames= FALSE, selection = 'none',
               options = list(dom = 'Bfrtip', scrollX = TRUE, scrollCollapse = TRUE,
-                             scrollY = "400px",  paging = FALSE,
-                             buttons = list('copy', #'print',
-                                            list(
-                                              extend = 'collection',
-                                              buttons = c('csv', 'excel', 'pdf'),
-                                              text = 'Download')
-)
-)
-)
-)
+                             scrollY = "70vh", pageLength = 10000)))#,
 
-  
-#  updateLoadingButton(session, "download_button", label = "Load Data")
-
-#  output$download1 <- downloadHandler(
-#    filename = function() {
-#      paste("Data_", gsub("-","_",Sys.Date()), ".csv", sep="")
-#    },
-#    content = function(file) {
-#      write.csv(species_data(), file)
-#    })
+  output$download1 <- downloadHandler(
+    filename = function() {
+      paste(gsub(" ","_",input$species_input), "_",Sys.Date(),".csv",sep = "")
+    },
+    content = function(file) {
+      write_csv(species_data(), file)
+    }
+  )
     
 }
 
