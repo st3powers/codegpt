@@ -34,13 +34,14 @@ ui <- fluidPage(
 #      p("This app retrieves data from GBIF- Global Biodiversity Information Facility"),#, https://www.gbif.org/"),
 #      tags$a(href= "https://www.gbif.org/", "https://www.gbif.org/"),
       
-      p(span("This app retrieves species location data from GBIF- Global Biodiversity Information Facility ",style="font-weight:bold"),url_GBIF_format),
-      p(span('See Owens H, Barve V, Chamberlain S (2024). spocc: Interface to Species Occurrence Data Sources. R package version 1.2.3', url_spocc_format)),
+      p(span("This app retrieves species location data from GBIF- Global Biodiversity Information Facility",style="font-weight:bold"),url_GBIF_format),
+      p(span("References",tags$br(),'Owens H, Barve V, Chamberlain S. 2024. spocc: Interface to Species Occurrence Data Sources. R package version 1.2.3', url_spocc_format)),
       p(),
       fluidRow(
         column(width = 8,
-      textInput("species_input", "Type species scientific name (genus and species)", value = "Alligator mississippiensis"),
-      numericInput("recordlimit", "Set record limit (be patient if you increase this)", value = 500)
+#      textInput("species_input", "Type species scientific name- both genus & species", value = "Alligator mississippiensis"),
+      textInput("species_input", "TYPE GENUS & SPECIES - Comma separated lists acceptable", value = "Alligator mississippiensis"),
+      numericInput("recordlimit", "SET RECORD LIMIT - Be patient if you increase this", value = 500)
                )),
 #      actionButton("download_button", "Get data")#,
       loadingButton("download_button", "Get data")#,
@@ -153,7 +154,6 @@ server <- function(input, output) {
     }
     resetLoadingButton("download_button") 
     map
-    
   })
   
   output$message_largetable<- renderText({
@@ -164,7 +164,7 @@ server <- function(input, output) {
     datatable(species_data(), 
               rownames= FALSE, selection = 'none',
               options = list(dom = 'Bfrtip', scrollX = TRUE, scrollCollapse = TRUE,
-                             scrollY = "70vh", pageLength = 10000)))#,
+                             scrollY = "70vh", pageLength = 100)))#,
 
   output$download1 <- downloadHandler(
     filename = function() {
